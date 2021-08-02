@@ -26,7 +26,7 @@ SECRET_KEY = 'a0#%!=_#_aeh7$rkiv_fd=^+eyjo=o8-6fiu)8dmoj#f48fo^!'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['webify.azurewebsites.net/',]
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
