@@ -1,0 +1,153 @@
+{% extends 'base.html' %}
+    {% block extrastyle %}
+    <style>
+    .resize_image {
+        height: 100%;
+        width: 100%;
+    }
+    </style>
+    {% endblock %}
+{% block content %}
+
+<br>
+<div class="container">
+    <div class="row">
+        <div class="col-12 text-center py-2">
+            <h3>OCR</h3>
+        </div>
+        <div class="col-10 col-sm-10 col-md-6 mx-auto">
+            <form method = "POST" enctype="multipart/form-data" action = "{% url 'convert' %}">
+                {% csrf_token %}
+                <div class="form-group text-center">
+                    <input type="text" name="img_name" class="form-control" placeholder="Image Name" required>
+                    <label class="form-control" style="border: none;"> Choose a language: 
+                    <select name="lang">
+                        <option value="eng" selected>English</option>
+                        <option value="hin">Hindi</option>
+                      </select>
+                    </label>
+                    <input type="file" name="image" class="form-control" accept="image/*" required style="border: none;">
+                </div>
+                {% if messages %}
+                {% for msg in messages %}
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    {{ msg }}
+    
+                    <button type="button" class="close" data-dismiss="alert" area-label="Close">
+                        <span area-hidden-true>&times;</span>
+                    </button>
+                </div>
+                {% endfor %}
+                {% endif %}
+                <div class="form-group text-center">
+                    <input type="submit" class="btn btn-primary px-4" value="Generate">
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12 text-center">
+            <h4>Your Images</h4>
+        </div>
+    </div>
+    <div class="row", style="background-color: #ecebeb50; font-weight: bold;">
+        <div class="col-md-1">#</div>
+        <div class="col-md-2">Name</div>
+        <div class="col-md-5">Text</div>
+        <div class="col-md-2">Image</div>
+        <div class="col-md-1">Delete</div>
+        <div class="col-md-1">Info</div>
+    </div>
+    <div class="row">
+        {% for img in image.object_list %}
+            <div class="col-md-1">#</div>
+            <div class="col-md-2">{{ img.name }}</div>
+            <div class="col-md-5 text-truncate">{{ img.text }}</div>
+            <div class="col-md-2">
+                <img class="img-fluid img-thumbnail" src="/media/{{img.image}}" alt="{{img.image}}" width="100" data-toggle="modal" data-target="#exampleModal{{ forloop.counter }}"/>     
+            </div>
+            <div class="modal fade" id="exampleModal{{ forloop.counter }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title w-100" id="exampleModalLabel">{{ img.name }}</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">×</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <img src="/media/{{img.image}}" alt="{{img.image}}" class="resize_image">
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button"class="btn btn-danger" data-dismiss="modal">
+                                Close
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-1">
+                <form method="post" action = "{% url 'deleteocr' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="delete" value="{{ img.image }}">
+                    <button type="submit" style="border: none; background: none; outline: none;"><span class="material-icons">delete</span></button>
+                </form>
+            </div>
+            <div class="col-md-1">
+                <a href = "{% url 'image_analytics' img.name %}">
+                    <span class="material-icons">info_outline</span>
+                </a>
+            </div>
+        {% endfor %}   
+        <div class="container p-4">
+            <ul class="pagination justify-content-center">
+                {% if image.has_previous %}
+                    <li class="page-item">
+                        <a class = "page-link" href="?page=1">Previous</a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
+                    </li>
+                {% endif %}              
+                {% if image.number|add:'-4' > 1 %}
+                    <li class="page-item"><a class="page-link" href="?page={{ image.number|add:'-5' }}">&hellip;</a></li>
+                {% endif %}  
+                {% for i in image.paginator.page_range %}
+                    {% if image.number == i %}
+                        <li class="page-item active" aria-current="page">
+                            <span class="page-link">
+                                {{ i }}
+                                <span class="sr-only">(current)</span>
+                            </span>
+                        </li>
+                    {% elif i > image.number|add:'-5' and i < image.number|add:'5' %}
+                        <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                    {% endif %}
+                {% endfor %}
+                {% if image.paginator.num_pages > image.number|add:'4' %}
+                    <li class="page-item"><a class="page-link" href="?page={{ image.number|add:'5' }}">&hellip;</a></li>
+                {% endif %}
+                {% if image.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ image.next_page_number }}">Next</a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Next</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+    integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+    crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+    integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+    crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
+    integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
+    crossorigin="anonymous"></script>
+{% endblock %}  

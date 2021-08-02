@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<br>
+<div class="container">
+    <div class="row">
+        <div class="col-12 text-center py-2">
+            <h3>Shorten A Url</h3>
+        </div>
+        <div class="col-10 col-sm-10 col-md-6 mx-auto">
+            <form action="{% url 'generate' %}" method="POST">
+                {% csrf_token %}
+                <div class="form-group">
+                    <input type="url" name="original" class="form-control" placeholder="Original Url">
+                </div>
+                {% if messages %}
+                {% for msg in messages %}
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    {{ msg }}
+    
+                    <button type="button" class="close" data-dismiss="alert" area-label="Close">
+                        <span area-hidden-true>&times;</span>
+                    </button>
+                </div>
+                {% endfor %}
+                {% endif %}
+    
+                <div class="form-group text-center">
+                    <input type="submit" class="btn btn-primary px-4" value="Generate">
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12 text-center">
+            <h4>Your Url's</h4>
+        </div>
+    </div>
+    <div class="row", style="background-color: #ecebeb50; font-weight: bold;">
+        <div class="col-md-6">Original URL</div>
+        <div class="col-md-3">Short URL</div>
+        <div class="col-md-1">Clicks</div>
+        <div class="col-md-1">Delete</div>
+        <div class="col-md-1">Info</div>
+    </div>
+    <div class="row">
+        {% for url in urls.object_list %}
+            <div class="col-md-6 text-truncate"><a href="{{ url.original_url }}" target="_blank">{{ url.original_url }}</a></div>
+            <div class="col-md-3 text-truncate"><a href="{{ url.get_short_url }}" target="_blank">{{ url.get_url }}{{ url.short_url }}</a></div>
+            <div class="col-md-1">{{ url.counter }}</div>
+            <div class="col-md-1">
+                <form action = "{% url 'deleteurl' %}", method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="delete" value="{{ url.short_url }}">
+                    <button type="submit" style="border: none; background: none; outline: none;"><span class="material-icons">delete</span></button>
+                </form>
+            </div>
+            <div class="col-md-1">
+                <a href = "{% url 'analytics' url.short_url %}">
+                    <span class="material-icons">info_outline</span>
+                </a>
+            </div>
+        {% endfor %}
+        <div class="container p-4">
+            <ul class="pagination justify-content-center">
+                {% if urls.has_previous %}
+                    <li class="page-item">
+                        <a class = "page-link" href="?page=1">Previous</a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
+                    </li>
+                {% endif %}              
+                {% if urls.number|add:'-4' > 1 %}
+                    <li class="page-item"><a class="page-link" href="?page={{ urls.number|add:'-5' }}">&hellip;</a></li>
+                {% endif %}  
+                {% for i in urls.paginator.page_range %}
+                    {% if urls.number == i %}
+                        <li class="page-item active" aria-current="page">
+                            <span class="page-link">
+                                {{ i }}
+                                <span class="sr-only">(current)</span>
+                            </span>
+                        </li>
+                    {% elif i > urls.number|add:'-5' and i < urls.number|add:'5' %}
+                        <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                    {% endif %}
+                {% endfor %}
+                {% if urls.paginator.num_pages > urls.number|add:'4' %}
+                    <li class="page-item"><a class="page-link" href="?page={{ urls.number|add:'5' }}">&hellip;</a></li>
+                {% endif %}
+                {% if urls.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ urls.next_page_number }}">Next</a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Next</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+    integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+    crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+    integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+    crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
+    integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
+    crossorigin="anonymous"></script>
+
+{% endblock %}

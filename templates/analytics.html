@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% block content %}
+<style>
+    .url_info{
+        margin-top: 10px;
+        padding: 15px;
+        background-color: #ecebeb50;
+        border-radius: 5px;
+        margin-bottom: 10px;
+    }
+
+    .url_info h4, p{
+        margin: 0;
+        padding:0;
+    }
+</style>
+<br>
+<div class="container">
+    <div class="row">
+        <div class="col-12 py-2 url_info">
+            <h4> Analytics data for : <a href="{{ url.get_short_url }}" target="_blank">{{ url.short_url }}</a></h4>
+		    <p style = "word-wrap:break-word;"> Original URL : <a style="text-decoration: none" href="{{ url.original_url }}" target="_blank">{{ url.original_url }}</a></p>
+            <p>Created Date : {{ url.date }}</p>
+            <p>Click : {{ url.counter }}</p>
+        </div>
+    </div>
+    <div class="data_block">
+        <h4>Browser</h4>
+        <div class="row" style="background-color: #ecebeb50; font-weight: bold;">
+            <div class="col-md-3">Chrome</div>
+            <div class="col-md-3">Firefox</div>
+            <div class="col-md-3">Safari</div>
+            <div class="col-md-3">Other Browsers</div>
+        </div>
+        <div class="row">
+            <div class="col-md-3">{{ url.chrome }}</div>
+            <div class="col-md-3">{{ url.firefox }}</div>
+            <div class="col-md-3">{{ url.safari }}</div>
+            <div class="col-md-3">{{ url.other_browser }}</div>
+        </div>
+    </div>
+    <div class="data_block">
+        <h4>Platform</h4>
+        <div class="row" style="background-color: #ecebeb50; font-weight: bold;">
+            <div class="col-md-2">Android</div>
+            <div class="col-md-2">IOS</div>
+            <div class="col-md-2">Window</div>
+            <div class="col-md-2">Linux</div>
+            <div class="col-md-2">MAC</div>
+            <div class="col-md-2">Other Platform</div>
+        </div>
+        <div class="row">
+            <div class="col-md-2">{{ url.android }}</div>
+            <div class="col-md-2">{{ url.ios }}</div>
+            <div class="col-md-2">{{ url.window }}</div>
+            <div class="col-md-2">{{ url.linux }}</div>
+            <div class="col-md-2">{{ url.mac }}</div>
+            <div class="col-md-2">{{ url.other_platform }}</div>
+        </div>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+    integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+    crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+    integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+    crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
+    integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
+    crossorigin="anonymous"></script>
+{% endblock %}
