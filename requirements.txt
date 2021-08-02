@@ -1,5 +1,4 @@
 Django
 tesseract
 pytesseract
-tesseract-ocr
 django-user-agents
